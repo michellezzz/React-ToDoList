@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../build/react.js"></script>
+    <script src="../build/react-dom.js"></script>
+    <script src="../build/browser.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    
+    <script type="text/babel">
+      var TodoList = React.createClass({
+  render: function() {
+   return <ul>
+            {this.props.items.map((task, taskIndex) => 
+                <li key={taskIndex}>
+                    {task.text}
+                    <button onClick={this.props.handleDelete} value={taskIndex}> Delete </button>
+                </li>
+            )}
+        </ul>;  
+    }
+});
+
+var TodoApp = React.createClass({
+  getInitialState: function() {
+    return {
+      items: [{text: 'Eat'}, {text: 'Study'}, {text: 'Sleep'}],
+      text: '',
+      info: ''
+    };
+  },
+  
+  onChange: function(e) {
+    this.setState({
+      text: e.target.value
+    });
+  },
+  
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var nextItems = this.state.items.concat([{
+      text: this.state.text,
+    }]);
+    
+    this.setState({
+      items: nextItems,
+      text: '',
+      info: ''
+    });
+  },
+  
+  handleDelete: function(e) {
+    e.preventDefault();
+    var nextItems = this.state.items;
+    var taskIndex = parseInt(e.target.value, 10);
+    var target = nextItems[taskIndex].text;
+    nextItems.splice(taskIndex,1);
+    this.setState({
+      items: nextItems,
+      info: 'You deleted task '+ target 
+    });
+  },
+  
+  render: function() {
+    return (
+      <div>
+        <h3>TODO</h3>
+        <TodoList items={this.state.items} handleDelete = {this.handleDelete}/>
+        <form onSubmit={this.handleSubmit}>
+          <input onChange={this.onChange} value={this.state.text} />
+          <button>{'Add #' + (this.state.items.length + 1)}</button>
+        </form>
+        <p>{this.state.info}</p>
+      </div>
+    );
+  }
+});
+
+ReactDOM.render(<TodoApp />, document.getElementById('container'));
+    </script>
+    
+  </body>
+</html>
